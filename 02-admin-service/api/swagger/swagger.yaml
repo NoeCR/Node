@@ -1,0 +1,40 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: AdminPro-service
+host: localhost:8080
+basePath: /
+schemes:
+  - http
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /alive:
+    x-swagger-router-controller: misc
+    get:
+      description:  Get service status
+      operationId: alive
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: object
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+
+  /swagger:
+    x-swagger-pipe: swagger_raw
+
+definitions:
+  ErrorResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string

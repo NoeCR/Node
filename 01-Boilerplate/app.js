@@ -63,8 +63,4 @@ app.use('/doc', SwaggerUi.serve, SwaggerUi.setup(swaggerSpec));
 //   const port = process.env.PORT || 8080;
 //   app.listen(port);
 
-//   const host = swaggerExpress.runner.swagger.host
-
-//   console.log('Web server listening at: %s', host );
-//   console.log('Browse your REST API at %s%s', host, '/doc');
 // });
