@@ -8,11 +8,15 @@
   "license": "",
   "main": "app.js",
   "dependencies": {
+    "ajv": "^6.10.2",
     "cors": "^2.8.5",
     "express": "^4.12.3",
+    "firebase": "^6.3.4",
     "helmet": "^3.20.0",
+    "normalize-email": "^1.1.1",
     "swagger-express-mw": "^0.1.0",
     "swagger-ui-express": "^4.0.7",
+    "uuid": "^3.3.2",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
@@ -21,7 +25,7 @@
     "supertest": "^1.0.0"
   },
   "scripts": {
-    "start": "nodemon app.js",
+    "start": "NODE_ENV=local-dev nodemon app.js",
     "test": "swagger project test"
   }
 }

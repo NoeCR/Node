@@ -7,6 +7,11 @@ const express = require ('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const version = require ('./package.json').version;
+global.config = require(`./config/${process.env.NODE_ENV}`);
+var firebase = require("firebase");
+// Exportar la configuración de la DB para usar databse o firestore
+const db = firebase.initializeApp(global.config.fireConfig);
+
 
 const app = express ();
 
@@ -40,6 +45,9 @@ SwaggerExpress.create(config, function(err, swaggerExpress) {
   app.listen(port);
 
   if (swaggerExpress.runner.swagger.paths['/alive']) {
-    console.log(`Server listening at http://localhost:${ port }`);
+    console.log(`Server listening at http://localhost:${ port }`, ' \x1b[32monline\x1b[0m');
+    console.log(`Test API at http://localhost:${ port }/doc`, ' \x1b[32monline\x1b[0m');
   }
 });
+
+module.exports = app; // for testing

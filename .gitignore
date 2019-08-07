@@ -1,2 +1,5 @@
 01-Boilerplate/node_modules
 02-admin-service/node_modules
+02-admin-service/config/local-dev.js
+03-admin-service-express/node_modules
+03-admin-service-express/config/local-dev.js
