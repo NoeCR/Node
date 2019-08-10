@@ -2,8 +2,10 @@
 
 const fs = require ('fs');
 const Ajv = require ('ajv');
+const path = require ('path');
 const uuid = require ('uuid/v4');
 const database = require ('../helpers/database');
+const name = '/users/';
 
 const ajv = new Ajv();
 const loadJsonSchema = file => JSON.parse (fs.readFileSync (path.join (__dirname, `./jsonschema/${file}`), 'utf-8'));
@@ -20,12 +22,12 @@ module.exports.addUser = async data => {
       
       const doc = {
         ...data,
-        id: uuid (),
+        id: uuid ()
       };
-  
-      const res = await database.insert ( doc );
-  
-      return res === 1;
+      console.log('Entra en el modelo con la data: ', doc);
+      const res = await database.insert ( name, doc );
+      console.log('Response to database helper', res);
+      return Promise.resolve (res);
     }
     catch (ex) {
       return Promise.reject (ex);
@@ -37,11 +39,11 @@ module.exports.addUser = async data => {
 // ----------------------------------------------------------------------------
 module.exports.getUserById = async ( id ) => {
     try {
-      const res = await database.findOne ( id );
+      const res = await database.findOne ( name, id );
       if (res.length === 0 )
         return Promise.resolve (null);
   
-      return Promise.resolve ({ res });
+      return Promise.resolve ( res );
     }
     catch (ex) {
       return Promise.reject (ex);
@@ -51,29 +53,37 @@ module.exports.getUserById = async ( id ) => {
 // ----------------------------------------------------------------------------
 // get Users
 // ----------------------------------------------------------------------------
-module.exports.getUsers = async ( filter ) => {
-    try {
-      if (!validate.filter (filter))
-        throw new Error(`Invalid JSON format (filter): ${JSON.stringify (validate.filter.errors)}`);
-  
+module.exports.getUsers = async ( ) => {
+  try {
+    const res = await database.getAll ( name );
+    if (res.length === 0 )
+      return Promise.resolve (null);
 
-  
-    console.log('Filtro preparado para enviar al metodo pagiante: ', filter);
-      const res = await database.paginate ( );
-  
-      return Promise.resolve ({ total: res.total, data: res.docs });
-    }
-    catch (ex) {
-      return Promise.reject (ex);
-    }
+    return Promise.resolve ( res );
+  }
+  catch (ex) {
+    return Promise.reject (ex);
+  }
 };
  
 // ----------------------------------------------------------------------------
-// Delete user
+// Update user by ID
 // ----------------------------------------------------------------------------
-module.exports.deleteUser = async id => {
+module.exports.updateUserById = async (id, data) => {
+  try {
+    return Promise.resolve (await database.update ( name, { id: id.trim() }, data ));
+  }
+  catch (ex) {
+    return Promise.reject (ex);
+  }
+};
+
+// ----------------------------------------------------------------------------
+// Delete user by ID
+// ----------------------------------------------------------------------------
+module.exports.deleteUserById = async id => {
     try {
-      return Promise.resolve (await database.delete ( { id: id.trim() } ));
+      return Promise.resolve (await database.delete ( name, { id: id.trim() } ));
     }
     catch (ex) {
       return Promise.reject (ex);

@@ -7,11 +7,7 @@ const express = require ('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const version = require ('./package.json').version;
-global.config = require(`./config/${process.env.NODE_ENV}`);
-var firebase = require("firebase");
-// Exportar la configuración de la DB para usar databse o firestore
-const db = firebase.initializeApp(global.config.fireConfig);
-
+const database = require ('./api/helpers/database.js');
 
 const app = express ();
 
@@ -19,28 +15,25 @@ app.use (helmet());
 app.use (cors());
 
 app.use ('/doc', SwaggerUi.serve, (req, res, next) => {
- /*  if (global.context.config.disableDoc) {
-    next();
-  }
-  else { */
+
     const swaggerDoc = YAML.load ('./api/swagger/swagger.yaml');
     swaggerDoc.host = req.get('host');
     swaggerDoc.schemes = [ req.protocol ];
     swaggerDoc.info.version = version;
     SwaggerUi.setup (swaggerDoc) (req, res);
- // }
 });
 
 var config = {
   appRoot: __dirname // required config
 };
 
-SwaggerExpress.create(config, function(err, swaggerExpress) {
+SwaggerExpress.create(config, async (err, swaggerExpress) => {
   if (err) { throw err; }
 
   // install middleware
   swaggerExpress.register(app);
-
+  // Conect with database
+  await database.connect();
   var port = process.env.PORT || 8080;
   app.listen(port);
 

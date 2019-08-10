@@ -42,7 +42,7 @@ module.exports.insert = (name, document) => {
     mongoose.model (name).create (document, (err, data) => {
       if (err) {
         if ((err.code === 11000) || (err.code === 11001))
-          return reject (boom.conflict ('Duplicated key'));
+          return reject (console.log ('Duplicated key'));
 
         return reject (err);
       }
@@ -70,11 +70,13 @@ module.exports.find = (name, filter, projection, options) => {
 // paginate
 // ----------------------------------------------------------------------------
 module.exports.paginate = (name, query, opts) => {
+  console.log('Entra en la páginacion', name, query, opts);
   return new Promise ((resolve, reject) => {
     mongoose.model (name).paginate (query, opts, (err, data) => {
       if (err)
         return reject (err);
 
+      console.log('DATA devuelte por la base de datos', data);
       resolve (data);
     });
   });
@@ -102,7 +104,7 @@ module.exports.update = (name, condition, update, opts) => {
     mongoose.model (name).updateMany (condition, update, opts || {}, (err, numAffected) => {
       if (err) {
         if ((err.code === 11000) || (err.code === 11001))
-          return reject (boom.conflict ('Duplicated key'));
+          return reject (console.log ('Duplicated key'));
 
         return reject (err);
       }

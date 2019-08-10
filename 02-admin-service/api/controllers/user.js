@@ -2,7 +2,8 @@
 
 const uuid = require ('uuid/v4');
 const normalize = require ('normalize-email');
-const database = require ('../helpers/database.js');
+const wrap = require ('express-async-wrap');
+const model = { user: require ('../models/user.js') };
 // const crypto = require ('../helpers/crypto.js');
 
 
@@ -18,80 +19,97 @@ const database = require ('../helpers/database.js');
 // status: string -> enabled : disabled
 // createdat: Date -> required -> take the date when the user is registered
 // ----------------------------------------------------------------------------
-module.exports.addNewUser = async details => {
+
+// ----------------------------------------------------------------------------
+// add
+// ----------------------------------------------------------------------------
+module.exports.add = wrap (async (req, res) => {
   try {
-    const data = {
-      userId: uuid(),
-      email: normalize (details.email),
-      // password: await crypto.hashPassword (details.password), Cifrado del password revision
-      status: details.status? details.status : 'enabled',
-    };
+    console.log(req.swagger.params.data.value);
+    const success = await model.user.addUser (req.swagger.params.data.value);
 
-   
-    const res = await database.insert ('User', data);
-
-    return Promise.resolve (res.userId);
+    res.status (200).send ( success );
   }
   catch (ex) {
-    return Promise.reject (ex);
+    res.status(400).json({
+      ok: false,
+      message: 'Error in controllers.user.add',
+      ex
+    })
   }
-};
-
-// ----------------------------------------------------------------------------
-// getUserData
-//
-// filterBy: 'id'
-// ----------------------------------------------------------------------------
-module.exports.getUserData = async ( filterById ) => {
-  try {
-
-    const res = await database.find ('User', filter);
-
-    if (res.length === 0)
-      return Promise.resolve (null);
+});
 
 
-    return Promise.resolve (data);
-  }
-  catch (ex) {
-    return Promise.reject (ex);
-  }
-};
-
 // ----------------------------------------------------------------------------
-// setUserData
+// get
 // ----------------------------------------------------------------------------
-module.exports.setUserData = async data => {
-  try {
-    
-    return await database.update ();
+module.exports.get =  wrap (async (req, res) => {
+  try{
+    const response = await model.user.getUsers();
+    res.status (200).send ({
+      data: response
+    });
   }
-  catch (ex) {
-    return Promise.reject (ex);
+  catch(ex) {
+    res.status(400).json({
+      ok: false,
+      message: 'Error in controllers.user.get',
+      ex
+    })
   }
-};
-
+});
 // ----------------------------------------------------------------------------
-// getAllUsers
+// getUserById
 // ----------------------------------------------------------------------------
-module.exports.getAllUsers = async (offset, limit, filterBy) => {
-  try {
-    const res = await database.paginate ();
-    return Promise.resolve ({ res });
+module.exports.getUserById = wrap (async (req, res) => {
+  try{
+    const response = await model.user.getUserById( req.swagger.params.id.value );
+    res.status (200).send ({
+      data: response
+    });
   }
-  catch (ex) {
-    return Promise.reject (ex);
+  catch(ex) {
+    res.status(400).json({
+      ok: false,
+      message: 'Error in controllers.user.getUserById',
+      ex
+    })
   }
-};
-
+});
 // ----------------------------------------------------------------------------
-// deleteUser
+// update
 // ----------------------------------------------------------------------------
-module.exports.deleteUser = async userId => {
-  try {
-    return Promise.resolve (await database.delete ('User', { userId: userId.trim() }));
+module.exports.update = wrap (async (req, res) => {
+  try{
+    const response = await model.user.updateUserById( req.swagger.params.id.value, req.swagger.params.data.value );
+    console.log('Response: ', response);
+    res.status (200).send ( response );
   }
-  catch (ex) {
-    return Promise.reject (ex);
+  catch(ex) {
+    res.status(400).json({
+      ok: false,
+      message: 'Error in controllers.user.delete',
+      ex
+    })
   }
-};
+});
+// ----------------------------------------------------------------------------
+// delete
+// ----------------------------------------------------------------------------
+module.exports.delete = wrap (async (req, res) => {
+  try{
+  const response = await model.user.deleteUserById( req.swagger.params.id.value );
+  console.log('Response: ', response);
+  res.status (200).send ({
+    ok: true,
+    message: 'User deleted succesfuly'
+  });
+  }
+  catch(ex) {
+    res.status(400).json({
+      ok: false,
+      message: 'Error in controllers.user.delete',
+      ex
+    })
+  }
+});
