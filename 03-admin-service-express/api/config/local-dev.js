@@ -2,7 +2,7 @@
 
 module.exports = {
     database: {
-        connectionString: "mongodb+srv://adminpro:KCfbrOxB4bZfxcbf@cluster0-clasg.mongodb.net/adminpro?retryWrites=true&w=majority"
+        connectionString: "MongoDB-data-conection"
     },
     port: 8081
 };
