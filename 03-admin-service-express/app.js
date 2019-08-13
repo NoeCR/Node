@@ -5,12 +5,20 @@ const database = require('./api/helpers/database');
 global.config = require(`./api/config/${process.env.NODE_ENV}`);
 const path = require ('path');
 const version = require ('./package.json').version;
-// const bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 
 // Inicializar variables
 let app = express();
 // app.use(express.urlencoded());
 const port = global.config.port || 3000;
+
+
+// Body parser
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
+// parse application/json
+app.use(bodyParser.json());
+
 
 // Database conection 
 database.connect ( global.config.database.connectionString );

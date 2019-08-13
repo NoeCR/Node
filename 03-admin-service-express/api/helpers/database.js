@@ -1,7 +1,7 @@
 'use strict';
 
 const mongoose = require ('mongoose');
-
+const filters = require('./filter');
 // ----------------------------------------------------------------------------
 // connect
 // ----------------------------------------------------------------------------
@@ -47,7 +47,7 @@ module.exports.insert = (name, document) => {
         return reject (err);
       }
 
-      resolve (data);
+      resolve ( filters.filterUserData( data ) );
     });
   });
 };
@@ -76,7 +76,6 @@ module.exports.paginate = (name, query, opts) => {
       if (err)
         return reject (err);
 
-      console.log('DATA devuelte por la base de datos', data);
       resolve (data);
     });
   });

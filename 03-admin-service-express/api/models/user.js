@@ -25,7 +25,7 @@ module.exports.getUser = async (filter, options={}) => {
     //   throw console.error (`Invalid JSON format (filter): ${JSON.stringify (validate.filter.errors)}`);
 
 
-    const select = { __v: 0, _id: 0, status: 0 };
+    const select = { __v: 0, _id: 0, status: 0, password: 0 };
     for (let k of options.exclude || [])
       select[k] = 0;
 
@@ -64,9 +64,34 @@ module.exports.addUser = async data => {
       ...data,
       id: uuid ()
     };
+    // const res = await database.update (database.Names.User, doc, {}, { upsert: true, setDefaultsOnInsert: true });
+    const res = await database.insert (database.Names.User, doc );
 
-    // console.log(database.defineSchema('User'));
-    const res = await database.update (database.Names.User, doc, {}, { upsert: true, setDefaultsOnInsert: true });
+    return Promise.resolve(res);
+  }
+  catch (ex) {
+    return Promise.reject (ex);
+  }
+};
+
+// ----------------------------------------------------------------------------
+// updateUser
+// ----------------------------------------------------------------------------
+module.exports.updateUser = async data => {
+  try {
+    
+    const id = data.id;
+    delete data.id;
+
+    const doc = {
+      ...data,
+    };
+    // const res = await database.update (database.Names.User, doc, {}, { upsert: true, setDefaultsOnInsert: true });
+    const res = await database.update (
+        database.Names.User, 
+        { id }, 
+        doc, 
+        { upsert: true, setDefaultsOnInsert: true });
 
     return res === 1;
   }
@@ -74,7 +99,9 @@ module.exports.addUser = async data => {
     return Promise.reject (ex);
   }
 };
-
+// ----------------------------------------------------------------------------
+// deleteUser
+// ----------------------------------------------------------------------------
 module.exports.deleteUser = async id => {
   try {
     return Promise.resolve (await database.delete (database.Names.User, { id: id.trim() }));

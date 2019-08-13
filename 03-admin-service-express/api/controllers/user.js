@@ -11,13 +11,10 @@ module.exports.get = wrap (async (req, res) => {
   try {
     const data = await model.user.getUser();
 
-    res.status (200).send (data);
+    return Promise.resolve(data)
   }
   catch (ex) {
-    res.status(400).json({
-        ok: false,
-        message: 'controllers.user.get'
-    })
+    return Promise.reject (ex);
   }
 });
 
@@ -40,46 +37,18 @@ module.exports.getUserById = wrap (async (req, res) => {
 
 
 // ----------------------------------------------------------------------------
-// getUsersByCategory
+// getUsersByHospital
 // ----------------------------------------------------------------------------
-module.exports.getUsersByCategory = wrap (async (req, res) => {
-  try {
-    let categoryId = req.swagger.params.id.value;
-    const data = await model.User.getUsersByCategory(categoryId,
-      {
-        ...(req.swagger.params.exclude.value && { exclude: req.swagger.params.exclude.value }),
-        ...(req.swagger.params.offset.value && { offset: req.swagger.params.offset.value }),
-        ...(req.swagger.params.limit.value && { limit: req.swagger.params.limit.value }),
-        ...(req.swagger.params.sort.value && { sort: JSON.parse(req.swagger.params.sort.value) })
-
-      },
-    );
-    const userPref = {};
-    for (let i = 0; i < data.data.length; i++) {
-      if (!userPref[data.data[i].userId]) {
-        const preferences = await model.preferences.getPreferences(JSON.stringify({ userId: data.data[i].userId }));
-        if (preferences.data)
-          userPref[data.data[i].userId] = preferences.data[0];
-      }
-      data.data[i].userPreferences = userPref[data.data[i].userId] || {};
-    }
-    res.status (200).send (data);
-  }
-  catch (ex) {
-    res.boom (ex);
-
-    Logger.instance().error (ex, { c: 'controllers.User.getUserByCategory' });
-  }
-});
+module.exports.getUsersByHospital = wrap (async (req, res) => {});
 
 // ----------------------------------------------------------------------------
 // add
 // ----------------------------------------------------------------------------
 module.exports.add = wrap (async (req, res) => {
   try {
-    console.log( req.body );
-    const success = await model.user.addUser ( req.body );
-    res.status (200).send ({ success });
+    const data = await model.user.addUser ( req.body );
+
+    return Promise.resolve (data);
   }
   catch (ex) {
     console.error('Error: user.add.controller -> ', ex)
@@ -87,19 +56,35 @@ module.exports.add = wrap (async (req, res) => {
   }
 });
 
-module.exports.delete = wrap (async (req, res) => {
+// ----------------------------------------------------------------------------
+// put
+// ----------------------------------------------------------------------------
+module.exports.put = wrap (async (req, res) => {
   try {
-    const result = await model.User.deleteUser (req.swagger.params.id.value);
+    // Obtener el id de usuario a actualizar
 
-    if (result)
-      return res.status (200).send ({ result: true });
+    const data = await model.user.updateUser ( req.body );
 
-    res.boom (boom.notFound ('User not found'));
+    return Promise.resolve (data);
   }
   catch (ex) {
-    res.boom (ex);
+    console.error('Error: user.add.controller -> ', ex)
 
-    Logger.instance().error (ex, { c: 'controllers.User.delete' });
+  }
+});
+// ----------------------------------------------------------------------------
+// delete
+// ----------------------------------------------------------------------------
+module.exports.delete = wrap (async (req, res) => {
+  try {
+    const result = await model.user.deleteUser ( req.body.id );
+    if (result)
+    return Promise.resolve ( true );
+
+    res.send(400, 'User not found');
+  }
+  catch (ex) {
+    res.send(500, `Error: controllers.user.delete: \n ${ex}`);
   }
 });
 

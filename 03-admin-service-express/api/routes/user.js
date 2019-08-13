@@ -1,31 +1,82 @@
 const router = require('express').Router();
-var bodyParser = require('body-parser');
 const userController = require('../controllers/user');
 
-const jsonParser = bodyParser.json();
-var urlencodedParser = bodyParser.urlencoded({ extended: false })
+// var bodyParser = require('body-parser');
+// const jsonParser = bodyParser.json();
+// var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
+// ============================================================
+// Obtener usuarios
+// ============================================================
 router.get('/', ( req, res, next ) => {
 
     userController.get(req, res)
-    .then( res => {
-        console.log('Respuesta al metodo GET de Usuario');
-        res.status(200).json({
-            ok: true,
-            data: res.data
-        })
+    .then( response => {
+        res.status(200).send( response )
     })
     .catch( err => {
-        console.log('Error: user.get -> ', err);
+        res.status(500).send({
+            ok: false,
+            message: 'Error in database.user.get ',
+            errors: err
+        })
     })
 });
-
-router.post('/add', urlencodedParser, ( req, res, next ) => {
+// ============================================================
+// Crear nuevo usuario
+// ============================================================
+router.post('/add', ( req, res, next ) => {
     userController.add( req, res )
-        .then( res => {
-            console.log('Response: ', res);
+        .then( response => {
+            res.status(200).send({
+                user: response
+            });            
         })
-        .catch( err => console.log('Error: user.add -> ', err ) )
+        .catch( err => {
+            res.status(500).json({
+                ok: false,
+                message: 'Error in database.user.add: ',
+                errors: err
+            })
+        })
         .finally( console.log('Process finish! ') )
+});
+// ============================================================
+// Actualiza un usuario
+// ============================================================
+router.put('/update', ( req, res, next ) => {
+    userController.put(req, res)
+        .then( response => {
+            res.status(200).send({
+                ok: true,
+                message: 'User update successfully!'
+            });
+        })
+        .catch( err => {
+            res.status(500).json({
+                ok: false,
+                message: 'Error in database.user.put: ',
+                errors: err
+            })
+        })
+});
+// ============================================================
+// Elimina un usuario
+// ============================================================
+router.delete('/delete', ( req, res, next ) => {
+    userController.delete( req, res )
+        .then( response => {
+            res.status(200).send({
+                ok: true,
+                message: 'User delete successfully'
+            });            
+        })
+        .catch( err => {
+            res.status(500).json({
+                ok: false,
+                message: 'Error in routes.user.delete',
+                errors: err
+            })
+        })
 });
 module.exports = router;
