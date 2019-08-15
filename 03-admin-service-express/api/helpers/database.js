@@ -67,10 +67,23 @@ module.exports.find = (name, filter, projection, options) => {
 };
 
 // ----------------------------------------------------------------------------
+// findOne
+// ----------------------------------------------------------------------------
+module.exports.findOne = (name, filter, projection, options) => {
+  return new Promise ((resolve, reject) => {
+    mongoose.model (name).findOne (filter, projection, options, (err, data) => {
+      if (err)
+        return reject (err);
+
+      resolve (data);
+    });
+  });
+};
+
+// ----------------------------------------------------------------------------
 // paginate
 // ----------------------------------------------------------------------------
 module.exports.paginate = (name, query, opts) => {
-  console.log('Entra en la páginacion', name, query, opts);
   return new Promise ((resolve, reject) => {
     mongoose.model (name).paginate (query, opts, (err, data) => {
       if (err)

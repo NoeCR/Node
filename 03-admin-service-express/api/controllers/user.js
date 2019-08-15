@@ -24,22 +24,29 @@ module.exports.get = wrap (async (req, res) => {
 // ----------------------------------------------------------------------------
 module.exports.getUserById = wrap (async (req, res) => {
   try {
-    let UserId = req.swagger.params.id.value;
+    let UserId = req.params.id;
     const data = await model.user.getUserById(UserId);
     res.status (200).send (data.res);
   }
   catch (ex) {
-    res.boom (ex);
-
-    Logger.instance().error (ex, { c: 'controllers.User.getUserById' });
+    return Promise.reject(ex);
   }
 });
 
 
 // ----------------------------------------------------------------------------
-// getUsersByHospital
+// getUsersByEmail
 // ----------------------------------------------------------------------------
-module.exports.getUsersByHospital = wrap (async (req, res) => {});
+module.exports.getUsersByEmail = wrap (async (req, res) => {
+  try {
+    let email = req.body.email;
+    const data = await model.user.getUserByEmail( email );
+    return Promise.resolve(data.res);
+  }
+  catch (ex) {
+    return Promise.reject(ex);
+  }
+});
 
 // ----------------------------------------------------------------------------
 // add
@@ -51,8 +58,7 @@ module.exports.add = wrap (async (req, res) => {
     return Promise.resolve (data);
   }
   catch (ex) {
-    console.error('Error: user.add.controller -> ', ex)
-
+    return Promise.reject(ex);
   }
 });
 

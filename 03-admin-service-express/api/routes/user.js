@@ -1,9 +1,6 @@
 const router = require('express').Router();
 const userController = require('../controllers/user');
 
-// var bodyParser = require('body-parser');
-// const jsonParser = bodyParser.json();
-// var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 // ============================================================
 // Obtener usuarios
@@ -12,7 +9,9 @@ router.get('/', ( req, res, next ) => {
 
     userController.get(req, res)
     .then( response => {
-        res.status(200).send( response )
+        const  data = Object.assign({}, response, { userToken: req.user } );
+        console.log(data);
+        res.status(200).send( data )
     })
     .catch( err => {
         res.status(500).send({
@@ -33,7 +32,7 @@ router.post('/add', ( req, res, next ) => {
             });            
         })
         .catch( err => {
-            res.status(500).json({
+            res.status(400).json({
                 ok: false,
                 message: 'Error in database.user.add: ',
                 errors: err

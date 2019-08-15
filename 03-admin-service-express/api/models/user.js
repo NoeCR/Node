@@ -7,6 +7,8 @@ const path = require ('path');
 const Ajv = require ('ajv');
 const uuid = require ('uuid/v4');
 const database = require ('../helpers/database');
+const normalize = require ('normalize-email');
+const crypto = require('../helpers/crypto');
 
 const ajv = new Ajv();
 const loadJsonSchema = file => JSON.parse (fs.readFileSync (path.join (__dirname, `./jsonschema/${file}`), 'utf-8'));
@@ -19,11 +21,6 @@ const validate = {
 // ----------------------------------------------------------------------------
 module.exports.getUser = async (filter, options={}) => {
   try {
-    // filter = JSON.parse (filter || '{}');
-
-    // if (!validate.filter (filter))
-    //   throw console.error (`Invalid JSON format (filter): ${JSON.stringify (validate.filter.errors)}`);
-
 
     const select = { __v: 0, _id: 0, status: 0, password: 0 };
     for (let k of options.exclude || [])
@@ -39,11 +36,11 @@ module.exports.getUser = async (filter, options={}) => {
 };
 
 // ----------------------------------------------------------------------------
-// getUserById
+// getUserByEmail
 // ----------------------------------------------------------------------------
-module.exports.getUserById = async ( id ) => {
+module.exports.getUserByEmail = async ( email ) => {
   try {
-    const res = await database.findOne ( 'User', { id: id }, { __v: 0, _id: 0, status: 0 } );
+    const res = await database.findOne ( database.Names.User, { email }, { __v: 0, _id: 0, status: 0, rol: 0 } );
     if (res.length === 0 )
       return Promise.resolve (null);
 
@@ -62,6 +59,8 @@ module.exports.addUser = async data => {
     
     const doc = {
       ...data,
+      email: normalize (data.email),
+      password: await crypto.hashPassword( data.password ),
       id: uuid ()
     };
     // const res = await database.update (database.Names.User, doc, {}, { upsert: true, setDefaultsOnInsert: true });
