@@ -8,7 +8,7 @@
   "license": "",
   "main": "app.js",
   "dependencies": {
-    "ajv": "^6.10.2",
+    "ajv": "^6.12.3",
     "cors": "^2.8.5",
     "express": "^4.12.3",
     "express-async-wrap": "^1.0.0",
