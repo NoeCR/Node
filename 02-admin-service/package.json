@@ -10,12 +10,12 @@
   "dependencies": {
     "ajv": "^6.10.2",
     "cors": "^2.8.5",
-    "express": "^4.12.3",
+    "express": "^4.18.2",
     "express-async-wrap": "^1.0.0",
     "firebase": "^6.3.4",
     "helmet": "^3.20.0",
     "normalize-email": "^1.1.1",
-    "swagger-express-mw": "^0.1.0",
+    "swagger-express-mw": "^0.7.0",
     "swagger-ui-express": "^4.0.7",
     "uuid": "^3.3.2",
     "yamljs": "^0.3.0"
@@ -23,7 +23,7 @@
   "devDependencies": {
     "nodemon": "^1.19.1",
     "should": "^7.1.0",
-    "supertest": "^1.0.0"
+    "supertest": "^6.3.2"
   },
   "scripts": {
     "start": "NODE_ENV=local-dev DEBUG=swagger-tools* nodemon app.js",
