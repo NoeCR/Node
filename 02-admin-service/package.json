@@ -10,7 +10,7 @@
   "dependencies": {
     "ajv": "^6.10.2",
     "cors": "^2.8.5",
-    "express": "^4.12.3",
+    "express": "^4.17.3",
     "express-async-wrap": "^1.0.0",
     "firebase": "^6.3.4",
     "helmet": "^3.20.0",
